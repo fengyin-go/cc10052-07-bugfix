@@ -4,7 +4,7 @@ from __future__ import annotations
 from app.services.base import BaseModuleService
 from app.services.event_stream import EventStreamService
 from app.services.exp_design import ExpDesignService
-from app.services.variant_assign import VariantAssignService
+from app.services.variant_assign import AssignmentReceiptService, VariantAssignService
 from app.services.metric_catalog import MetricCatalogService
 from app.services.metric_compute import MetricComputeService
 from app.services.significance_test import SignificanceTestService
@@ -16,7 +16,7 @@ from app.services.window_scheduler import WindowSchedulerService
 from app.services.data_freshness import DataFreshnessService
 from app.services.anomaly_metric import AnomalyMetricService
 from app.services.exp_archive import ExpArchiveService
-from app.services.sample_ratio import SampleRatioService
+from app.services.sample_ratio import SampleRatioDifferenceService, SampleRatioService
 from app.services.aa_check import AaCheckService
 from app.services.segment_slice import SegmentSliceService
 from app.services.exposure_log import ExposureLogService
@@ -27,6 +27,8 @@ SERVICES: dict[str, BaseModuleService] = {
     "event_stream": EventStreamService(),
     "exp_design": ExpDesignService(),
     "variant_assign": VariantAssignService(),
+    "assignment_receipt": AssignmentReceiptService(),
+    "variant_assign_receipt": AssignmentReceiptService(),
     "metric_catalog": MetricCatalogService(),
     "metric_compute": MetricComputeService(),
     "significance_test": SignificanceTestService(),
@@ -39,6 +41,8 @@ SERVICES: dict[str, BaseModuleService] = {
     "anomaly_metric": AnomalyMetricService(),
     "exp_archive": ExpArchiveService(),
     "sample_ratio": SampleRatioService(),
+    "sample_ratio_difference": SampleRatioDifferenceService(),
+    "sample_ratio_diff": SampleRatioDifferenceService(),
     "aa_check": AaCheckService(),
     "segment_slice": SegmentSliceService(),
     "exposure_log": ExposureLogService(),

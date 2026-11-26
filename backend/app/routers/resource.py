@@ -85,7 +85,12 @@ def get_entry(module: str, entry_id: int) -> dict[str, Any]:
 @router.post("/{module}", response_model=ActionResult)
 def create_entry(module: str, payload: EntryPayload) -> ActionResult:
     service = require_service(module)
-    entry, missing = service.create_entry(payload.values)
+    values = dict(payload.values or {})
+    # 兼容直接把字段放在请求体顶层的调用；标准 {values: {...}} 优先。
+    extra = getattr(payload, "model_extra", None) or {}
+    for key, value in extra.items():
+        values.setdefault(key, value)
+    entry, missing = service.create_entry(values)
     if missing:
         return ActionResult(ok=False, message=f"缺少必填字段：{'、'.join(missing)}")
     return ActionResult(ok=True, message=f"{service.ENTITY}已登记", entry=entry)
@@ -94,5 +99,9 @@ def create_entry(module: str, payload: EntryPayload) -> ActionResult:
 @router.post("/{module}/{entry_id}/actions", response_model=ActionResult)
 def run_action(module: str, entry_id: int, payload: ActionPayload) -> ActionResult:
     service = require_service(module)
-    entry, message = service.run_action(entry_id, payload.action.strip())
+    entry, message = service.run_action(
+        entry_id,
+        payload.action.strip(),
+        payload=payload,
+    )
     return ActionResult(ok=entry is not None, message=message, entry=entry)

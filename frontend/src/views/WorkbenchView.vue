@@ -15,6 +15,9 @@
       </div>
     </header>
 
+    <VariantAssignPanel v-if="meta.key === 'variant_assign'" @changed="reload" />
+    <SampleRatioPanel v-if="meta.key === 'sample_ratio'" @changed="reload" />
+
     <div class="stat-row">
       <article v-for="item in stats" :key="item.label" class="stat-card">
         <span class="stat-label">{{ item.label }}</span>
@@ -104,6 +107,8 @@ import {
   runAction as applyAction,
 } from '@/api/backend-service'
 import type { EntryRow } from '@/data/types'
+import SampleRatioPanel from '@/components/SampleRatioPanel.vue'
+import VariantAssignPanel from '@/components/VariantAssignPanel.vue'
 
 const props = defineProps<{ moduleKey: string }>()
 const meta = moduleMeta(props.moduleKey)
@@ -156,6 +161,10 @@ async function submitCreate() {
   try {
     const result = await createEntry(meta.key, createValues.value)
     if (!result.ok) throw new Error(result.message)
+    const receiptId = result.entry?.receipt_id || result.entry?.batch_id
+    if (meta.key === 'variant_assign' && receiptId) {
+      window.dispatchEvent(new CustomEvent('open-assignment-receipt', { detail: String(receiptId) }))
+    }
     showCreate.value = false
     await reload()
   } catch (error) {
